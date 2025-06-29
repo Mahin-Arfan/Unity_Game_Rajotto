@@ -1,0 +1,35 @@
+fileFormatVersion: 2
+guid: 4bd08bab7db6f5a45a8da51cb660c6ed
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - scoreText: {instanceID: 0}
+  - waypoint: {instanceID: 0}
+  - deadEnemyChair: {instanceID: 0}
+  - deadEnemyCar: {instanceID: 0}
+  - player: {instanceID: 0}
+  - mainCamera: {instanceID: 0}
+  - cameraBone: {instanceID: 0}
+  - weapon: {instanceID: 0}
+  - playerController: {instanceID: 0}
+  - weaponSwitching: {instanceID: 0}
+  - timeManager: {instanceID: 0}
+  - audioManager: {instanceID: 0}
+  - audioMixer: {fileID: 24100000, guid: f9ba3f635b433bc478eaf36d27d2fc15, type: 2}
+  - actionButton: {instanceID: 0}
+  - moraRabta: {instanceID: 0}
+  - firstEnemy: {instanceID: 0}
+  - enemys: {instanceID: 0}
+  - rpgEnemy: {instanceID: 0}
+  - playerTPP: {instanceID: 0}
+  - cameraTPP: {instanceID: 0}
+  - playerGhost: {instanceID: 0}
+  - crosshair: {instanceID: 0}
+  - dorja1: {instanceID: 0}
+  - dorja2: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

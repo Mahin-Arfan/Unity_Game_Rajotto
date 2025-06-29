@@ -252,6 +252,6 @@ public class Phase_1 : MonoBehaviour
     public void RPGFire()
     {
         GameObject rpgFiredRocket = Instantiate(rpgRocket, agent.weaponIk.aimTransform.position, Quaternion.identity);
-        rpgFiredRocket.transform.GetComponent<RocketScript>().target = gameManagerScript.player.transform;
+        //rpgFiredRocket.transform.GetComponent<RocketScript>().target = gameManagerScript.player.transform;
     }
 }

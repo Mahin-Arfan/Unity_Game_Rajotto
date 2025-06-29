@@ -99,4 +99,10 @@ InitTestScene*.unity*
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 
+# OverSize Animations
 Assets/Animations/PlayerAnimations/Weapon/FPP/Reload*.anim
+Assets/Animations/PlayerAnimations/Weapon/FPP/Reload*.meta
+
+# Large Folders
+Assets/Models
+Assets/TerrainSampleAssets

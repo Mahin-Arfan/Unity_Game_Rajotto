@@ -216,7 +216,7 @@ public class PlayerController : MonoBehaviour
             characterController.Move(movementVector * playerStats.crouchingMovementSpeed * Time.deltaTime);
             weaponAnimator.SetBool("isSprinting", false);
         }
-        else if (isRunning && isGoingForward && !weaponScript.isFiring && !weaponScript.isReloading)
+        else if (isRunning && isGoingForward && !weaponScript.isFiring)
         {
             characterController.Move(movementVector * playerStats.runningMovementSpeed * Time.deltaTime);
             gunHolderAnimator.SetBool("isWalking", false);

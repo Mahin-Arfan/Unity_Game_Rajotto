@@ -141,6 +141,7 @@ public class MovementScriptTPP : MonoBehaviour
     public bool isJumping { get; private set; } = false;
     public bool isCrouching { get; private set; } = false;
     public bool isAiming { get; private set; } = false;
+    public bool isHipFiring = false;
     //Hashes
     int playerVelocityHash;
     int playerStateHash;
@@ -224,6 +225,7 @@ public class MovementScriptTPP : MonoBehaviour
         {
             if (canAim && !isRunning && !isAiming && (Time.time > lastAimEndTime + aimCoolDown))
             {
+                isHipFiring = false;
                 isAiming = true;
             }
         }
@@ -234,6 +236,14 @@ public class MovementScriptTPP : MonoBehaviour
                 isAiming = false;
                 coverToAim = false;
                 lastAimEndTime = Time.time;
+            }
+            if (Input.GetButton("Fire1"))
+            {
+                isHipFiring = true;
+            }
+            else
+            {
+                isHipFiring = false;
             }
         }
 
@@ -327,7 +337,7 @@ public class MovementScriptTPP : MonoBehaviour
         float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + playerCamera.eulerAngles.y;
         float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
 
-        if (isAiming)
+        if (isAiming || isHipFiring)
         {
             if (playerAimState < 1)
             {
@@ -355,7 +365,7 @@ public class MovementScriptTPP : MonoBehaviour
 
         if (direction.magnitude >= 0.1f)
         {
-            if (isAiming)
+            if (isAiming || isHipFiring)
             {
                 if(horizontalInput > 0f)
                 {
@@ -435,7 +445,7 @@ public class MovementScriptTPP : MonoBehaviour
                         }
                     }
                 }
-                else if (isRunning && !isCovering)     // && isGoingForward && !weaponScript.isFiring && !weaponScript.isReloading
+                else if (isRunning && !isCovering)
                 {
                     currentMovement = playerStats.tppRunningMovementSpeed;
                     if (playerVelocity < 1f)
@@ -457,7 +467,7 @@ public class MovementScriptTPP : MonoBehaviour
                     }
                 }
             }
-            if(!isAiming && !isCovering)
+            if(!isAiming && !isCovering && !isHipFiring)
             {
                 //Aim Velocity normalize
                 aimVelocityX = Mathf.MoveTowards(aimVelocityX, 0f, Time.deltaTime);
@@ -539,48 +549,38 @@ public class MovementScriptTPP : MonoBehaviour
     void CharacterMovement()
     {
         if (!characterController.enabled)
-        {
             return;
-        }
-        if(isAiming || isCovering)
+
+        bool isShootingStance = isAiming || isHipFiring;
+        forwardMovement = isShootingStance || isCovering;
+
+        if (isCovering)
         {
-            forwardMovement = true;
-            if (isAiming && isCovering)
+            if (isShootingStance)
             {
                 movementVector = Vector3.zero;
             }
-            else if (isAiming)
-            {
-                movementVector = Vector3.ClampMagnitude(transform.right * horizontalInput + transform.forward * verticalInput, 1.0f);
-            }
-            else if (isCovering)
-            {
-                if (canMoveInCover)
-                {
-                    movementVector = Vector3.ClampMagnitude(transform.right * -horizontalInput, 1.0f);
-                }
-                else
-                {
-                    movementVector = Vector3.zero;
-                }
-            }
             else
             {
-                movementVector = Vector3.ClampMagnitude(transform.right * horizontalInput + transform.forward * verticalInput, 1.0f);
+                movementVector = canMoveInCover
+                    ? Vector3.ClampMagnitude(transform.right * -horizontalInput, 1.0f)
+                    : Vector3.zero;
             }
         }
-        else
+        else if (isShootingStance)
         {
-            forwardMovement = false;
-        }
-        if (forwardMovement)
-        {
-            characterController.Move(movementVector.normalized * adjustMovementSpeed * Time.deltaTime);
+            movementVector = Vector3.ClampMagnitude(transform.right * horizontalInput + transform.forward * verticalInput, 1.0f);
         }
         else
         {
-            characterController.Move(transform.forward.normalized * adjustMovementSpeed * Time.deltaTime);
+            movementVector = Vector3.zero;
         }
+
+        Vector3 moveDirection = forwardMovement
+            ? movementVector.normalized
+            : transform.forward.normalized;
+
+        characterController.Move(moveDirection * adjustMovementSpeed * Time.deltaTime);
     }
 
     void HandleCrouchTPP()
@@ -662,7 +662,7 @@ public class MovementScriptTPP : MonoBehaviour
             coverToAim = false;
             return;
         }
-        if (!isAiming)
+        if (!isAiming || !isHipFiring)
         {
             if (horizontalInput > 0f)
             {
@@ -785,8 +785,6 @@ public class MovementScriptTPP : MonoBehaviour
                     coverToAim = true;
                 }
                 horizontalCameraValue = cameraScriptTPP.GetHorizontalCameraValue();
-                Debug.LogWarning("Value: " + horizontalCameraValue + "plusMinV: " + coverAimCameraPlusMinV + "plusMaxV: " + coverAimCameraPlusMaxV
-                    + "minusMaxV: " + coverAimCameraMinusMaxV + "minusMinV: " + coverAimCameraMinusMinV);
                 bool isInPlusRange = horizontalCameraValue >= coverAimCameraPlusMinV && horizontalCameraValue <= coverAimCameraPlusMaxV;
 
                 bool isInMinusRange = horizontalCameraValue >= coverAimCameraMinusMinV && horizontalCameraValue <= coverAimCameraMinusMaxV;

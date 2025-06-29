@@ -25,8 +25,11 @@ public class WeaponScriptTpp : MonoBehaviour
     [SerializeField] private float impactForce = 250f;
     [SerializeField] private LayerMask bulletIgnore;
     [SerializeField] private float bulletSpread = 0.015f;
+    [SerializeField] private float hipFireBulletSpreadMultiplier = 4f;
 
     private float nextTimeToFire = 0f;
+    public float hipFireDelay = 0.25f;
+    private float canHipFireTime = 0f;
 
     public GameObject bulletShell;
     public GameObject bulletFired;
@@ -99,7 +102,7 @@ public class WeaponScriptTpp : MonoBehaviour
                 weaponType = 0;
                 break;
         }
-        if(weaponType == 1)
+        if (weaponType == 1)
         {
             movementScript.animator.SetBool("Pistol", true);
             movementScript.animator.SetLayerWeight(2, 1f);
@@ -151,14 +154,23 @@ public class WeaponScriptTpp : MonoBehaviour
             return;
         }
 
-        if (!movementScript.isAiming)
+        if (!movementScript.isAiming && !movementScript.isHipFiring)
         {
             weaponClose = false;
+            canHipFireTime = 0f;
             return;
         }
-
-        if (Input.GetButton("Fire1") && Time.time >= nextTimeToFire && movementScript.isAiming && !weaponClose && canFire)
+        else if(movementScript.isHipFiring)
         {
+            canHipFireTime += Time.deltaTime;
+        }
+
+        if (Input.GetButton("Fire1") && Time.time >= nextTimeToFire && !weaponClose && canFire)
+        {
+            if (movementScript.isHipFiring && canHipFireTime < hipFireDelay && !movementScript.isAiming)
+            {
+                return;
+            }
             nextTimeToFire = Time.time + 1f / fireRate;
             if(currentAmmo == 1)
             {
@@ -179,7 +191,7 @@ public class WeaponScriptTpp : MonoBehaviour
             }
             ShootTPP();
         }
-        else if (Input.GetButtonUp("Fire1") || !movementScript.isAiming || weaponClose)
+        else if (Input.GetButtonUp("Fire1") || (!movementScript.isAiming && !movementScript.isHipFiring) || weaponClose)
         {
             isFiring = false;
         }
@@ -218,7 +230,14 @@ public class WeaponScriptTpp : MonoBehaviour
             playerPerspectiveScript.primaryAmmo--;
         }
 
-        recoilScript.BulletSpread(bulletSpread);
+        if (movementScript.isHipFiring)
+        {
+            recoilScript.BulletSpread(bulletSpread * hipFireBulletSpreadMultiplier);
+        }
+        else
+        {
+            recoilScript.BulletSpread(bulletSpread);
+        }
         CinemachineImpulseSource impulseSource = GetComponent<CinemachineImpulseSource>();
         recoilScript.RecoilFireTPP(recoilX, recoilY, recoilZ, returnSpeed, snappiness, impulseSource);
 

@@ -120,7 +120,8 @@ public class WeaponScript : MonoBehaviour
         {
             currentAmmo = playerPerspectiveScript.primaryAmmo;
         }
-        
+        isReloading = false;
+        isFiring = false;
     }
 
     // Update is called once per frame
